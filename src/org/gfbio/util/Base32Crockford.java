@@ -31,7 +31,7 @@ public class Base32Crockford {
 			throw new IllegalArgumentException("The number parameter can not be negative.");
 		}
 		
-		String response = "";
+		StringBuilder response = new StringBuilder();
 		//calculate the checksum already, even if it is not required, as the number will be changed during the conversion
 		int checksum = (int)(number % 37);
 		
@@ -39,39 +39,39 @@ public class Base32Crockford {
 			//convert the number into the string, by calculating the module 32 of the current number, 
 			//looking up the corresponding encoding symbol for this value and putting it in front of the already existing result string 
 			int remainder = (int)(number % 32);
-			response = CHARACTER_TABLE[remainder] + response;
+			response.insert(0, CHARACTER_TABLE[remainder]);
 			
 			//calculate the next higher digit by dividing by 32 (long division without fractions)
 			number = number/32;
 		}while(number > 0);
 		
 		if(withCheckChar){
-			response = response + Character.toString(CHARACTER_TABLE[checksum]);
+			response.append(Character.toString(CHARACTER_TABLE[checksum]));
 		}
 		
 		//add padding zeros to the beginning if the result string length is shorter than the length parameter
 		if(length>0){
 			while(response.length()<length){
-				response = "0" + response;
+				response.insert(0, "0");
 			}
 		}
 		
 		//insert spaces for better readability if the block width is given
 		if(blockWidth>0){			
-			String spacedResponse = "";
+			StringBuilder spacedResponse = new StringBuilder();
 			//copy the response character by character
 			for(int i=0;i<response.length();i++){
 				//if the current character position is a pure multiple of blockWidth but not at the first character (i=0), then add a dash
 				if(i%blockWidth == 0 && i > 0){
-					spacedResponse = spacedResponse + "-";
+					spacedResponse.append("-");
 				}
 				//add the character at the current position
-				spacedResponse = spacedResponse + response.substring(i, i+1);
+				spacedResponse.append(response.substring(i, i+1));
 			}
 			response = spacedResponse;
 		}
 		
-		return response;
+		return response.toString();
 	}
 	
 	/**
